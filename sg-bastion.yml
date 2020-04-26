@@ -1,0 +1,29 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation for create SGs'
+
+#Paramentes
+Parameters:
+  VpcID:
+    Description: VPC for SG
+    Type: AWS::EC2::VPC::Id
+    Default: "vpc-0707f4776dfb2d9a7"
+  CidrIp:
+    Description: EC2 CIDR input
+    Type: String
+    Default: 0.0.0.0/0
+
+#Resources
+Resources:
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group
+      VpcId:
+          Ref: VpcID
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp:
+          Ref: CidrIp

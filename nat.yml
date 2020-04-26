@@ -1,0 +1,64 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation for create NAT for LAB'
+
+# This CloudFormation template deploys a basic VPC / Network.  Specifically:
+# It deploys a VPC with 2 subnets (1 public, 1 private) across 1 Availability Zones
+# A NAT Gateway is used to provide egress for private subnets.
+# The VPC and subnets are exported for use by other stacks.
+
+#Paramentes
+Parameters:
+  VpcID:
+    Description: VPC
+    Type: AWS::EC2::VPC::Id
+    Default: "vpc-03061a778dfe3ee39"
+  PrivateSubnetA:
+    Description: Private Subnet
+    Type: AWS::EC2::Subnet::Id
+    Default: "subnet-0e33623c154eef2fe"
+  PublicSubnetA:
+    Description: Public Subnet
+    Type: AWS::EC2::Subnet::Id
+    Default: "subnet-026459e9ebd24dcf4"
+
+Resources:
+
+  # Here is a private route table:
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcID
+      Tags:
+      - Key: Name
+        Value: Private
+
+  # Private route table can access web via NAT (created below)
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway
+
+  # Associate private route table can access web via NAT (created below)
+  PrivateSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      RouteTableId: !Ref PrivateRouteTable
+
+  # A NAT Gateway:
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt ElasticIPAddress.AllocationId
+      SubnetId: !Ref PublicSubnetA
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}
+
+  ElasticIPAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: VpcID

@@ -2,7 +2,7 @@
 
 ### STACK DO LAB:
 
-![STACK](pictures/stack.png)
+![STACK](picture/stack.png)
 
 ### APLICAR O CF:
 

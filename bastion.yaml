@@ -2,20 +2,19 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS CloudFormation for create bastion'
 
-#Paramentes
 Parameters:
   VpcID:
     Description: VPC for EC2
     Type: AWS::EC2::VPC::Id
-    Default: "vpc-0707f4776dfb2d9a7"
+    Default: "vpc-0008f8f8deb7358dc"
   SubNetId:
     Description: Subnet for EC2
     Type: AWS::EC2::Subnet::Id
-    Default: "subnet-0d7f74cb8360bcffd"
-  SecurityGroupName:
-    Description: SG for EC2
-    Type: AWS::EC2::SecurityGroup::GroupName
-    Default: "SG-BASTION-InstanceSecurityGroup-1UGUU3F2MF4JF"
+    Default: "subnet-0d5e1392d1f6ee1a2"
+  CidrIp:
+    Description: EC2 CIDR input
+    Type: String
+    Default: 0.0.0.0/0
   KeyName:
     Description: KeyPair for EC2
     Type: AWS::EC2::KeyPair::KeyName
@@ -41,8 +40,8 @@ Mappings:
         HVM64: ami-0080e4c5bc078760e
         HVMG2: ami-0aeb704d503081ea6
 
-#Resources
 Resources:
+# 1) EC2 - Bastion
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -52,10 +51,13 @@ Resources:
         Ref: SubNetId
       InstanceType:
         Ref: InstanceType
-      SecurityGroups:
-      - Ref: SecurityGroupName
+      SecurityGroupIds:
+      - Ref: InstanceSecurityGroup
       KeyName:
         Ref: KeyName
+      Tags: 
+      - Key: "Name"
+        Value: "IP-BASTIONA"
       ImageId:
           Fn::FindInMap:
           - AWSRegionArch2AMI
@@ -64,3 +66,25 @@ Resources:
             - AWSInstanceType2Arch
             - Ref: InstanceType
             - Arch
+# 2) Security Group:
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      VpcId:
+          Ref: VpcID
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp:
+          Ref: CidrIp
+# 3) EIP
+  ElasticIPAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: VPC
+      InstanceId: !Ref EC2Instance
+      Tags: 
+        - Key: "Name"
+          Value: "IP-BASTION"

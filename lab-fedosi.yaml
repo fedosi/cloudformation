@@ -50,6 +50,15 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-Private-A
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.10.3.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs ]    # Get the second AZ in the list
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-Private-B
   # Some route tables for our subnets:
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -108,3 +117,6 @@ Resources:
     Type: AWS::EC2::EIP
     Properties:
       Domain: VPC
+      Tags: 
+        - Key: "Name"
+          Value: "IP-NAT-GATEWAY"

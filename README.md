@@ -1,7 +1,8 @@
 # cloudformation
-Repositorio com codigos cloudformation
 
 ### STACK DO LAB:
+
+![STACK](pictures/stack.png)
 
 ### APLICAR O CF:
 

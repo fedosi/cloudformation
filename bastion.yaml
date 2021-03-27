@@ -6,11 +6,11 @@ Parameters:
   VpcID:
     Description: VPC for EC2
     Type: AWS::EC2::VPC::Id
-    Default: "vpc-0008f8f8deb7358dc"
+    Default: "vpc-023a0d90eb3b24377"
   SubNetId:
     Description: Subnet for EC2
     Type: AWS::EC2::Subnet::Id
-    Default: "subnet-0d5e1392d1f6ee1a2"
+    Default: "subnet-0d5b2ba0ed2618c6c"
   CidrIp:
     Description: EC2 CIDR input
     Type: String

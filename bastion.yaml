@@ -57,7 +57,7 @@ Resources:
         Ref: KeyName
       Tags: 
       - Key: "Name"
-        Value: "IP-BASTIONA"
+        Value: "LAB-BASTION"
       ImageId:
           Fn::FindInMap:
           - AWSRegionArch2AMI

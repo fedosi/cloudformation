@@ -10,11 +10,11 @@ Parameters:
   SubNetId:
     Description: Subnet for EC2
     Type: AWS::EC2::Subnet::Id
-    Default: "subnet-0e994c58b2169f7b7"
+    Default: "subnet-090da756ea2e7bdf3"
   CidrIp:
     Description: EC2 CIDR input
     Type: String
-    Default: 0.0.0.0/0
+    Default: 10.0.0.0/8
   KeyName:
     Description: KeyPair for EC2
     Type: AWS::EC2::KeyPair::KeyName
@@ -22,25 +22,29 @@ Parameters:
   InstanceType:
     Description: EC2 Type
     Type: String
-    Default: t3.micro
+    Default: t3.medium
   Region:
     Description: Region
     Type: String
     Default: us-east-1
+  NodeName:
+    Description: Node Name
+    Type: String
+    Default: "NODE01-K8S"
 Mappings:
   AWSInstanceType2Arch:
-      t3.micro:
-       Arch: HVM64
       t3.nano:
         Arch: HVM64
       t3.micro:
         Arch: HVM64
+      t3.medium:
+        Arch: HVM64
   AWSRegionArch2AMI:
       us-east-1:
-        HVM64: ami-0dc2d3e4c0f9ebd18
+        HVM64: ami-0a0b9243cac256a4b
 
 Resources:
-# 1) EC2 - Bastion
+# 1) EC2 - NODE
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -55,8 +59,9 @@ Resources:
       KeyName:
         Ref: KeyName
       Tags: 
-      - Key: "Name"
-        Value: "LAB-BASTION"
+      - Key: Name
+        Value: 
+          Ref: NodeName
       ImageId:
           Fn::FindInMap:
           - AWSRegionArch2AMI
@@ -65,7 +70,8 @@ Resources:
             - AWSInstanceType2Arch
             - Ref: InstanceType
             - Arch
-# 2) Security Group:
+
+# 4) Security Group:
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -78,12 +84,3 @@ Resources:
         ToPort: '22'
         CidrIp:
           Ref: CidrIp
-# 3) EIP
-  ElasticIPAddress:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: VPC
-      InstanceId: !Ref EC2Instance
-      Tags: 
-        - Key: "Name"
-          Value: "IP-BASTION"

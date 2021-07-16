@@ -25,4 +25,7 @@ aws --profile AWS-FEDOSI cloudformation delete-stack --stack-name LAB-FEDOSI
 
 ```Shell
 aws --profile AWS-FEDOSI cloudformation create-stack --stacl-name EC2-BASTION --template-body file://.bastion.yaml
+
+# Apos criado, pra dar nome ao host:
+hostnamectl set-hostname bastion
 ```
